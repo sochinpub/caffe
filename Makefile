@@ -1,12 +1,12 @@
 PROJECT := caffe
-
+# Makefile使用配置文件
 CONFIG_FILE := Makefile.config
 # Explicitly check for the config file, otherwise make -k will proceed anyway.
 ifeq ($(wildcard $(CONFIG_FILE)),)
 $(error $(CONFIG_FILE) not found. See $(CONFIG_FILE).example.)
 endif
 include $(CONFIG_FILE)
-
+# 编译目录：release和debug
 BUILD_DIR_LINK := $(BUILD_DIR)
 ifeq ($(RELEASE_BUILD_DIR),)
 	RELEASE_BUILD_DIR := .$(BUILD_DIR)_release
@@ -14,7 +14,7 @@ endif
 ifeq ($(DEBUG_BUILD_DIR),)
 	DEBUG_BUILD_DIR := .$(BUILD_DIR)_debug
 endif
-
+# 默认编译DEBUG为0
 DEBUG ?= 0
 ifeq ($(DEBUG), 1)
 	BUILD_DIR := $(DEBUG_BUILD_DIR)
@@ -25,6 +25,7 @@ else
 endif
 
 # All of the directories containing code.
+# 搜索源码目录：1） 所有包含*.cpp 的目录 2）
 SRC_DIRS := $(shell find * -type d -exec bash -c "find {} -maxdepth 1 \
 	\( -name '*.cpp' -o -name '*.proto' \) | grep -q ." \; -print)
 
@@ -44,11 +45,11 @@ COMMON_FLAGS += -DCAFFE_VERSION=$(DYNAMIC_VERSION_MAJOR).$(DYNAMIC_VERSION_MINOR
 ##############################
 # Get all source files
 ##############################
-# CXX_SRCS are the source files excluding the test ones.
+# CXX_SRCS are the source files excluding the test ones. C++文件
 CXX_SRCS := $(shell find src/$(PROJECT) ! -name "test_*.cpp" -name "*.cpp")
-# CU_SRCS are the cuda source files
+# CU_SRCS are the cuda source files cu文件
 CU_SRCS := $(shell find src/$(PROJECT) ! -name "test_*.cu" -name "*.cu")
-# TEST_SRCS are the test source files
+# TEST_SRCS are the test source files 测试文件
 TEST_MAIN_SRC := src/$(PROJECT)/test/test_caffe_main.cpp
 TEST_SRCS := $(shell find src/$(PROJECT) -name "test_*.cpp")
 TEST_SRCS := $(filter-out $(TEST_MAIN_SRC), $(TEST_SRCS))
@@ -58,9 +59,9 @@ GTEST_SRC := src/gtest/gtest-all.cpp
 TOOL_SRCS := $(shell find tools -name "*.cpp")
 # EXAMPLE_SRCS are the source files for the example binaries
 EXAMPLE_SRCS := $(shell find examples -name "*.cpp")
-# BUILD_INCLUDE_DIR contains any generated header files we want to include.
+# BUILD_INCLUDE_DIR contains any generated header files we want to include. 生成的头文件目录
 BUILD_INCLUDE_DIR := $(BUILD_DIR)/src
-# PROTO_SRCS are the protocol buffer definitions
+# PROTO_SRCS are the protocol buffer definitions proto文件
 PROTO_SRC_DIR := src/$(PROJECT)/proto
 PROTO_SRCS := $(wildcard $(PROTO_SRC_DIR)/*.proto)
 # PROTO_BUILD_DIR will contain the .cc and obj files generated from
